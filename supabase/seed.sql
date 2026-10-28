@@ -1,0 +1,17 @@
+-- FlowPilot AI demo seed (explicit, opt-in).
+--
+-- Built-in workflow templates are installed by the migrations. Demo leads, workflows and
+-- executions are only created when you explicitly ask for them, in one of three ways:
+--
+--   1. In the app: Settings -> Demo data -> "Load demo data" (owners/admins, your workspace only).
+--   2. CLI script:  DEMO_EMAIL=... DEMO_PASSWORD=... npm run db:seed   (needs SUPABASE_SECRET_KEY)
+--   3. SQL editor (Supabase dashboard), for an existing workspace:
+--
+--        select id, name from public.workspaces;                 -- find your workspace id
+--        select public.seed_demo_data('<workspace-id>');         -- add demo data
+--        select public.clear_demo_data('<workspace-id>');        -- remove it again
+--
+-- All demo rows are flagged with is_demo = true and are additive: nothing existing is overwritten.
+-- This file intentionally performs no writes, so `supabase db reset` never injects demo data
+-- into a workspace without your consent.
+select 'FlowPilot: see comments in supabase/seed.sql to load demo data' as info;
