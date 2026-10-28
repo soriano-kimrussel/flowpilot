@@ -227,6 +227,7 @@ export function MemberRow({ member, currentUserId, canManage, isOwner }) {
               Role
             </label>
             <Select
+              key={member.role}
               id={`role-${member.id}`}
               defaultValue={member.role}
               disabled={pending}

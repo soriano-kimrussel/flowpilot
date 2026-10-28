@@ -11,7 +11,8 @@ import { Table, Td, Th } from '@/components/ui/layout';
 import { useToast } from '@/components/ui/toast';
 import { bulkLeadAction } from '@/features/leads/actions';
 import { LEAD_STATUSES } from '@/lib/workflow-engine/constants';
-import { formatRelative, humanize } from '@/lib/utils/format';
+import { RelativeTime } from '@/components/ui/relative-time';
+import { humanize } from '@/lib/utils/format';
 
 const ACTION_COPY = {
   set_status: { title: 'Change status', confirm: 'Update leads', tone: 'primary' },
@@ -160,7 +161,7 @@ export function LeadsTable({ leads, canDelete, archivedView }) {
               </Td>
               <Td className="hidden text-ink-muted lg:table-cell">{humanize(lead.source)}</Td>
               <Td className="hidden text-ink-subtle sm:table-cell">
-                {formatRelative(lead.last_activity_at)}
+                <RelativeTime value={lead.last_activity_at} />
               </Td>
             </tr>
           ))}

@@ -14,7 +14,9 @@ export const viewport = { themeColor: '#4f46e5' };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    // Browser extensions (autofill, password managers) add attributes to <html> before
+    // hydration; this ignores those attribute diffs on this element only, not its children.
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen font-sans">
         <ToastProvider>{children}</ToastProvider>
       </body>

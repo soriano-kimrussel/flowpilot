@@ -2,7 +2,7 @@ import 'server-only';
 import { notFound } from 'next/navigation';
 import { unwrap } from '@/features/actions-util';
 import { can } from '@/lib/security/permissions';
-import { sanitizeSearch } from '@/features/leads/queries';
+import { sanitizeSearch, UUID_RE } from '@/features/leads/queries';
 
 export async function listWorkflows(session, { q, status, trigger }) {
   let query = session.supabase
@@ -43,6 +43,7 @@ export async function listWorkflows(session, { q, status, trigger }) {
 
 export async function getWorkflowForEditor(session, id) {
   const { supabase, workspaceId } = session;
+  if (!UUID_RE.test(String(id))) notFound();
   const workflow = unwrap(
     await supabase
       .from('workflows')

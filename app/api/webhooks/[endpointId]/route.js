@@ -63,15 +63,19 @@ export async function POST(request, { params }) {
       if (admin) {
         // Process right after responding (bounded). Without a secret key the job waits for
         // the next dashboard "Process queue" action or the daily cron.
-        after(() =>
-          processQueuedJobs({
-            supabase: admin,
-            workspaceId: data.workspace_id,
-            limit: 3,
-            workerId: 'webhook',
-            ai: getAI(),
-          }).catch((e) => console.error('[webhook] background processing failed:', e.message)),
-        );
+        after(async () => {
+          try {
+            await processQueuedJobs({
+              supabase: admin,
+              workspaceId: data.workspace_id,
+              limit: 3,
+              workerId: 'webhook',
+              ai: getAI(),
+            });
+          } catch (e) {
+            console.error('[webhook] background processing failed:', e.message);
+          }
+        });
       }
       return NextResponse.json(
         { status: 'accepted', jobId: data.job_id, processing: admin ? 'started' : 'queued' },

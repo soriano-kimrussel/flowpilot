@@ -30,7 +30,7 @@ function ConditionsEditor({ id, value = [], onChange, disabled, paths }) {
   return (
     <div className="space-y-2">
       <datalist id={`${id}-paths`}>
-        {paths.map((p) => (
+        {[...new Set(paths)].map((p) => (
           <option key={p} value={p} />
         ))}
       </datalist>
@@ -69,9 +69,9 @@ function ConditionsEditor({ id, value = [], onChange, disabled, paths }) {
               placeholder={condition.operator === 'in' ? 'a, b, c' : 'value'}
               onChange={(e) => {
                 const raw = e.target.value;
+                // Only canonical numbers convert, so "7." or "007" stay as typed while editing.
                 const numeric =
-                  raw.trim() !== '' &&
-                  !Number.isNaN(Number(raw)) &&
+                  /^-?(0|[1-9]\d*)(\.\d+)?$/.test(raw.trim()) &&
                   ['gt', 'gte', 'lt', 'lte', 'eq', 'neq'].includes(condition.operator);
                 update(index, { value: numeric ? Number(raw) : raw });
               }}
@@ -119,7 +119,7 @@ function OperationsEditor({ id, value = [], onChange, disabled, paths }) {
   return (
     <div className="space-y-2">
       <datalist id={`${id}-paths`}>
-        {paths.map((p) => (
+        {[...new Set(paths)].map((p) => (
           <option key={p} value={p} />
         ))}
       </datalist>

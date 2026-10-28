@@ -146,6 +146,16 @@ export async function removeMemberAction(memberId) {
   try {
     const session = await requireActionSession();
     const id = z.string().uuid().parse(memberId);
+    const target = unwrap(
+      await session.supabase
+        .from('workspace_members')
+        .select('role, user_id')
+        .eq('id', id)
+        .eq('workspace_id', session.workspaceId)
+        .maybeSingle(),
+    );
+    if (target?.role === 'admin' && session.role !== 'owner' && target.user_id !== session.user.id)
+      return { ok: false, error: 'Only owners can remove admins.' };
     const removed = unwrap(
       await session.supabase
         .from('workspace_members')

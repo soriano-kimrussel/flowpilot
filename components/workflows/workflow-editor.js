@@ -220,7 +220,7 @@ export function WorkflowEditor({
     const allIds = new Set();
     const draftStepIds = [];
     const paths = [...COMMON_PATHS];
-    walkSteps(definition.steps ?? [], (s) => {
+    walkSteps(definition?.steps ?? [], (s) => {
       allIds.add(s.id);
       if (s.type === 'ai.draft_reply') draftStepIds.push(s.id);
       if (s.type === 'lead.score') paths.push(`steps.${s.id}.score`);
@@ -301,7 +301,12 @@ export function WorkflowEditor({
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => startTransition(() => duplicateWorkflowAction(workflow.id))}
+                onClick={() =>
+                  startTransition(async () => {
+                    const res = await duplicateWorkflowAction(workflow.id);
+                    if (res && !res.ok) toast.error('Could not duplicate', res.error);
+                  })
+                }
                 disabled={pending}
               >
                 <Copy className="h-4 w-4" aria-hidden="true" /> Duplicate

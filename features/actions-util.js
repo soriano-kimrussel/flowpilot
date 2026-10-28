@@ -32,6 +32,7 @@ export function toActionError(error) {
   }
   if (error?.code && PG_MESSAGES[error.code]) return { ok: false, error: PG_MESSAGES[error.code] };
   if (error?.digest?.startsWith?.('NEXT_')) throw error; // let redirect()/notFound() propagate
+  if (error?.name === 'ZodError') return { ok: false, error: 'Invalid input.' };
   console.error('[action] unexpected error:', error?.message ?? error);
   return {
     ok: false,
@@ -39,10 +40,19 @@ export function toActionError(error) {
   };
 }
 
+// Codes our own SQL functions raise with user-facing messages (see supabase/migrations).
+const USER_FACING_CODES = new Set(['22023', '54000', 'P0002']);
+
 /** Wraps a Supabase { data, error } result, mapping known Postgres codes to friendly messages. */
 export function unwrap({ data, error }, fallback = 'Database request failed') {
   if (error) {
-    const err = new Error(PG_MESSAGES[error.code] ?? `${fallback}: ${error.message}`);
+    let message = PG_MESSAGES[error.code];
+    if (!message && USER_FACING_CODES.has(error.code)) message = error.message;
+    if (!message) {
+      console.error(`[db] ${fallback}:`, error.code, error.message);
+      message = `${fallback}. Please try again.`;
+    }
+    const err = new Error(message);
     err.code = error.code;
     throw err;
   }

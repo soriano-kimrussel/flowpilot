@@ -36,7 +36,8 @@ export default async function TemplatesPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {templates.map((t) => {
             const types = [];
-            walkSteps(t.definition.steps ?? [], (s) => types.push(s.type));
+            const steps = Array.isArray(t.definition?.steps) ? t.definition.steps : [];
+            walkSteps(steps, (s) => types.push(s.type));
             const simulated = types.some((type) => ACTION_CATALOG[type]?.simulated);
             return (
               <Card key={t.id} className="flex flex-col">
@@ -55,14 +56,12 @@ export default async function TemplatesPage() {
                     {countSteps(t.definition)} steps
                   </p>
                   <ol className="mt-2 flex-1 space-y-0.5 text-xs text-ink-muted">
-                    {t.definition.steps.slice(0, 6).map((s, i) => (
+                    {steps.slice(0, 6).map((s, i) => (
                       <li key={s.id}>
                         {i + 1}. {s.name || actionLabel(s.type)}
                       </li>
                     ))}
-                    {t.definition.steps.length > 6 && (
-                      <li>…and {t.definition.steps.length - 6} more</li>
-                    )}
+                    {steps.length > 6 && <li>…and {steps.length - 6} more</li>}
                   </ol>
                   {canEdit && (
                     <div className="mt-4 flex gap-2">

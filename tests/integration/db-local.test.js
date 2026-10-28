@@ -144,7 +144,20 @@ describe('RLS: cross-workspace isolation', () => {
         ]),
       ),
     );
-    expect(error.message).toMatch(/workspace_id cannot be changed|row-level security/);
+    expect(error.message).toMatch(
+      /workspace_id cannot be changed|row-level security|permission denied/,
+    );
+  });
+
+  it('members cannot mark leads as demo data (clear_demo_data would delete them)', async () => {
+    const error = await expectDenied(
+      asUser(db, alice.id, (tx) =>
+        tx.query('update public.leads set is_demo = true where workspace_id = $1', [
+          alice.workspaceId,
+        ]),
+      ),
+    );
+    expect(error.message).toMatch(/permission denied/);
   });
 
   it('anonymous requests cannot read any table', async () => {
@@ -647,5 +660,37 @@ describe('built-in templates', () => {
       'qualified-follow-up',
       'webhook-lead-intake',
     ]);
+  });
+});
+
+describe('member removal', () => {
+  it('admins can remove members but only owners can remove admins', async () => {
+    const dave = await createUser(db, { email: 'dave@a.example', fullName: 'Dave' });
+    const erin = await createUser(db, { email: 'erin@a.example', fullName: 'Erin' });
+    const frank = await createUser(db, { email: 'frank@a.example', fullName: 'Frank' });
+    for (const [email, role] of [
+      ['dave@a.example', 'admin'],
+      ['erin@a.example', 'admin'],
+      ['frank@a.example', 'member'],
+    ]) {
+      await asUserCommit(db, alice.id, (tx) =>
+        tx.query('select public.add_workspace_member($1, $2, $3)', [
+          alice.workspaceId,
+          email,
+          role,
+        ]),
+      );
+    }
+    const removeAs = (actor, target) =>
+      asUser(db, actor.id, (tx) =>
+        tx.query('delete from public.workspace_members where workspace_id = $1 and user_id = $2', [
+          alice.workspaceId,
+          target.id,
+        ]),
+      );
+    expect((await removeAs(dave, erin)).affectedRows).toBe(0);
+    expect((await removeAs(dave, frank)).affectedRows).toBe(1);
+    expect((await removeAs(dave, dave)).affectedRows).toBe(1);
+    expect((await removeAs(alice, erin)).affectedRows).toBe(1);
   });
 });

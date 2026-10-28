@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { safeRedirectPath } from '@/lib/validation/auth';
 import { escapeCsvCell, toCsv } from '@/lib/security/csv';
 import { maskEmail, redact } from '@/lib/security/redact';
 import { can, PERMISSIONS } from '@/lib/security/permissions';
@@ -121,9 +122,19 @@ describe('webhook authentication', () => {
 describe('lead list filters', () => {
   it('treats empty form fields as no filter and rejects junk', async () => {
     const { leadFilterSchema } = await import('@/lib/validation/lead');
-    expect(leadFilterSchema.parse({ minScore: '', status: '', page: '' })).toMatchObject({ minScore: undefined, status: undefined, page: 1 });
-    expect(leadFilterSchema.parse({ minScore: '70', sort: 'score_desc' })).toMatchObject({ minScore: 70, sort: 'score_desc' });
-    expect(leadFilterSchema.parse({ minScore: '999', sort: 'drop table' })).toMatchObject({ minScore: undefined, sort: 'created_desc' });
+    expect(leadFilterSchema.parse({ minScore: '', status: '', page: '' })).toMatchObject({
+      minScore: undefined,
+      status: undefined,
+      page: 1,
+    });
+    expect(leadFilterSchema.parse({ minScore: '70', sort: 'score_desc' })).toMatchObject({
+      minScore: 70,
+      sort: 'score_desc',
+    });
+    expect(leadFilterSchema.parse({ minScore: '999', sort: 'drop table' })).toMatchObject({
+      minScore: undefined,
+      sort: 'created_desc',
+    });
   });
 });
 
@@ -197,5 +208,26 @@ describe('idempotency and state machine helpers', () => {
     expect(canTransitionExecution('pending', 'succeeded')).toBe(false);
     expect(canTransitionStep('running', 'skipped')).toBe(true);
     expect(canTransitionStep('succeeded', 'failed')).toBe(false);
+  });
+});
+
+describe('safeRedirectPath', () => {
+  it('keeps same-origin relative paths', () => {
+    expect(safeRedirectPath('/dashboard/leads?page=2#top')).toBe('/dashboard/leads?page=2#top');
+  });
+
+  it('rejects absolute, protocol-relative and browser-normalised redirects', () => {
+    for (const value of [
+      'https://evil.com',
+      '//evil.com',
+      '/\\evil.com',
+      '/\t/evil.com',
+      '/\n/evil.com',
+      '/\r\n/evil.com',
+      'dashboard',
+      undefined,
+    ]) {
+      expect(safeRedirectPath(value)).toBe('/dashboard');
+    }
   });
 });

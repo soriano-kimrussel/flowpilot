@@ -59,14 +59,21 @@ export async function cancelJobAction(id) {
   try {
     const session = await requireActionSession('execution.cancel');
     const jobId = z.string().uuid().parse(id);
-    unwrap(
+    // Only queued jobs can be cancelled; a processing job is already running its execution.
+    const cancelled = unwrap(
       await session.supabase
         .from('workflow_jobs')
         .update({ status: 'cancelled', last_error: 'Cancelled by a workspace admin' })
         .eq('id', jobId)
         .eq('workspace_id', session.workspaceId)
-        .in('status', ['queued', 'processing']),
+        .eq('status', 'queued')
+        .select('id'),
     );
+    if (!cancelled.length)
+      return {
+        ok: false,
+        error: 'This job is already running or finished. Cancel its execution instead.',
+      };
     revalidatePath('/dashboard/executions');
     return { ok: true };
   } catch (error) {

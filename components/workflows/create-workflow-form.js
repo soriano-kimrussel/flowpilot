@@ -56,7 +56,7 @@ export function CreateWorkflowForm({ templates, defaultTemplateId }) {
                     if (t) {
                       form.setValue('name', t.name);
                       form.setValue('description', t.description ?? '');
-                      form.setValue('triggerType', t.definition.trigger.type);
+                      form.setValue('triggerType', t.definition?.trigger?.type ?? 'manual');
                     }
                   },
                 })}

@@ -169,6 +169,7 @@ export default async function LeadsPage({ searchParams }) {
           />
         ) : (
           <LeadsTable
+            key={JSON.stringify(filters)}
             leads={leads}
             canDelete={can(session.role, 'lead.delete')}
             archivedView={Boolean(filters.archived)}

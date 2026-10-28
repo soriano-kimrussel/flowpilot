@@ -11,7 +11,8 @@ import {
   deleteNotificationAction,
   markNotificationsReadAction,
 } from '@/features/notifications/actions';
-import { cn, formatRelative } from '@/lib/utils/format';
+import { RelativeTime } from '@/components/ui/relative-time';
+import { cn } from '@/lib/utils/format';
 
 const ICONS = {
   info: <Info className="h-5 w-5 text-brand-600" aria-hidden="true" />,
@@ -45,6 +46,7 @@ export function MarkAllReadButton({ disabled }) {
 
 export function NotificationItem({ notification: n }) {
   const router = useRouter();
+  const toast = useToast();
   const [pending, startTransition] = useTransition();
   const unread = !n.read_at;
   return (
@@ -58,7 +60,7 @@ export function NotificationItem({ notification: n }) {
         </p>
         {n.body && <p className="mt-0.5 text-sm text-ink-muted">{n.body}</p>}
         <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-ink-subtle">
-          <span>{formatRelative(n.created_at)}</span>
+          <RelativeTime value={n.created_at} />
           {n.link && (
             <Link
               href={n.link}
@@ -75,7 +77,8 @@ export function NotificationItem({ notification: n }) {
               disabled={pending}
               onClick={() =>
                 startTransition(async () => {
-                  await markNotificationsReadAction([n.id]);
+                  const res = await markNotificationsReadAction([n.id]);
+                  if (res && !res.ok) return toast.error('Could not mark as read', res.error);
                   router.refresh();
                 })
               }
@@ -92,7 +95,8 @@ export function NotificationItem({ notification: n }) {
         disabled={pending}
         onClick={() =>
           startTransition(async () => {
-            await deleteNotificationAction(n.id);
+            const res = await deleteNotificationAction(n.id);
+            if (res && !res.ok) return toast.error('Could not delete notification', res.error);
             router.refresh();
           })
         }

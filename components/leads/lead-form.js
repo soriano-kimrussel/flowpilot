@@ -49,8 +49,14 @@ function ExtractPanel({ onExtract }) {
 
   async function run() {
     setPending(true);
-    const res = await extractLeadFieldsAction({ text });
-    setPending(false);
+    let res;
+    try {
+      res = await extractLeadFieldsAction({ text });
+    } catch {
+      res = { ok: false, error: 'Something went wrong. Please try again.' };
+    } finally {
+      setPending(false);
+    }
     if (!res.ok) return toast.error('Could not extract fields', res.error);
     setResult(res);
     onExtract(res.fields);

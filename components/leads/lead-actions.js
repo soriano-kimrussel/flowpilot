@@ -26,6 +26,7 @@ export function LeadStatusSelect({ leadId, status }) {
         Lead status
       </label>
       <Select
+        key={status}
         id="lead-status"
         defaultValue={status}
         disabled={pending}

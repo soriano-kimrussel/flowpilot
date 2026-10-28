@@ -2,6 +2,7 @@ import 'server-only';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
 import { unwrap } from '@/features/actions-util';
+import { UUID_RE } from '@/features/leads/queries';
 import { EXECUTION_STATUSES, TRIGGER_TYPES } from '@/lib/workflow-engine/constants';
 
 export const EXECUTIONS_PAGE_SIZE = 25;
@@ -47,6 +48,7 @@ export async function getQueueSummary(session) {
 
 export async function getExecutionDetail(session, id) {
   const { supabase, workspaceId } = session;
+  if (!UUID_RE.test(String(id))) notFound();
   const execution = unwrap(
     await supabase
       .from('workflow_executions')

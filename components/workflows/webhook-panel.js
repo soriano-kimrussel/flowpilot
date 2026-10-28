@@ -8,7 +8,7 @@ import { ConfirmDialog } from '@/components/ui/dialog';
 import { Alert } from '@/components/ui/layout';
 import { useToast } from '@/components/ui/toast';
 import { generateWebhookSecretAction, revokeWebhookAction } from '@/features/workflows/actions';
-import { formatRelative } from '@/lib/utils/format';
+import { RelativeTime } from '@/components/ui/relative-time';
 
 function CodeBlock({ children }) {
   return (
@@ -70,9 +70,13 @@ export function WebhookPanel({ workflowId, endpoint, siteUrl, status }) {
             </code>
             <p className="mt-1 text-xs text-ink-subtle">
               Secret {endpoint.secret_hint} ·{' '}
-              {endpoint.last_used_at
-                ? `last used ${formatRelative(endpoint.last_used_at)}`
-                : 'never used'}
+              {endpoint.last_used_at ? (
+                <>
+                  last used <RelativeTime value={endpoint.last_used_at} />
+                </>
+              ) : (
+                'never used'
+              )}
             </p>
           </div>
           <CodeBlock>{`curl -X POST "${url}" \\

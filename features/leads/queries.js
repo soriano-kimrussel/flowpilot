@@ -5,6 +5,9 @@ import { createServices } from '@/lib/workflow-engine/services';
 
 export const LEADS_PAGE_SIZE = 20;
 
+/** Malformed ids in URLs should 404 instead of raising Postgres `invalid uuid` errors. */
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /** Keeps only characters that are safe inside a PostgREST `or` filter value. */
 export function sanitizeSearch(q) {
   return String(q ?? '')
@@ -48,12 +51,22 @@ export async function listLeads(session, filters) {
     .order(column, options)
     .order('id')
     .range(from, from + LEADS_PAGE_SIZE - 1);
+  // PostgREST answers 416 (PGRST103) when the page starts past the last row; show an empty page.
+  if (error?.code === 'PGRST103') {
+    const countQuery = session.supabase
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', session.workspaceId);
+    const { count: total } = await applyLeadFilters(countQuery, filters);
+    return { leads: [], total: total ?? 0 };
+  }
   unwrap({ data, error }, 'Could not load leads');
   return { leads: data, total: count ?? 0 };
 }
 
 export async function getLeadDetail(session, id) {
   const { supabase, workspaceId } = session;
+  if (!UUID_RE.test(String(id))) notFound();
   const { data: lead, error } = await supabase
     .from('leads')
     .select('*')

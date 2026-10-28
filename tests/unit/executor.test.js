@@ -296,3 +296,69 @@ describe('executor: idempotent replay of side effects on execution retry', () =>
     expect(crmActivities()).toBe(1);
   });
 });
+
+describe('executor: bookkeeping and replay failures', () => {
+  it('does not re-run an action when recording its success fails', async () => {
+    const store = createMemoryStore();
+    const transitionStep = store.transitionStep;
+    let failed = false;
+    store.transitionStep = async (...args) => {
+      if (args[2] === 'succeeded' && !failed) {
+        failed = true;
+        // A retryable-looking error: previously this re-ran the action and duplicated its effect.
+        const error = new Error('network blip');
+        error.name = 'TimeoutError';
+        throw error;
+      }
+      return transitionStep(...args);
+    };
+    const env = setup({
+      store,
+      definition: {
+        ...qualification,
+        steps: [{ id: 'note', type: 'notification.create', config: { title: 'Hi' } }],
+      },
+    });
+    const result = await run(env);
+    expect(result.status).toBe('failed');
+    expect(env.services.data.notifications).toHaveLength(1);
+  });
+
+  it('fails the step (not leaves it running) when replaying a deleted lead', async () => {
+    const store = createMemoryStore();
+    const services = createMemoryServices({
+      leads: [sampleLead],
+      integrations: { demo_crm: true, demo_email: false },
+    });
+    const definition = {
+      version: 1,
+      trigger: { type: 'lead.created', config: {} },
+      steps: [
+        { id: 'update', type: 'lead.update', config: { status: 'contacted' } },
+        { id: 'draft', type: 'ai.draft_reply', config: {} },
+        { id: 'send', type: 'email.demo_send', config: { draftStepId: 'draft' } },
+      ],
+    };
+    const first = store.addExecution({ workflow_id: workflow.id });
+    expect(
+      (await run({ store, services, execution: first, definition, lead: sampleLead })).status,
+    ).toBe('failed');
+
+    services.data.leadRows.delete(sampleLead.id);
+    const retry = store.addExecution({
+      workflow_id: workflow.id,
+      root_execution_id: first.id,
+      retry_of_id: first.id,
+      attempt: 2,
+    });
+    const r2 = await run({ store, services, execution: retry, definition, lead: sampleLead });
+    expect(r2.status).toBe('failed');
+    const [step] = store.stepsFor(retry.id);
+    expect(step).toMatchObject({
+      step_id: 'update',
+      status: 'failed',
+      error_code: 'REPLAY_FAILED',
+    });
+    expect(store.executions.get(retry.id).error_code).toBe('REPLAY_FAILED');
+  });
+});
