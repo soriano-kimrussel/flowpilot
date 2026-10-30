@@ -2,8 +2,8 @@ import { forwardRef } from 'react';
 import { cn } from '@/lib/utils/format';
 
 const control =
-  'block w-full rounded-md border border-line-strong bg-surface px-3 text-sm text-ink shadow-sm placeholder:text-gray-400 ' +
-  'focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:bg-gray-50 disabled:text-ink-subtle ' +
+  'block w-full rounded-lg border border-line-strong bg-surface-2/70 px-3 text-sm text-ink placeholder:text-ink-subtle ' +
+  'focus:border-brand-500 focus:outline-none focus:ring-3 focus:ring-brand-500/25 disabled:bg-gray-50 disabled:text-ink-subtle ' +
   'aria-[invalid=true]:border-red-500 aria-[invalid=true]:ring-red-500/20';
 
 export const Input = forwardRef(function Input({ className, ...props }, ref) {

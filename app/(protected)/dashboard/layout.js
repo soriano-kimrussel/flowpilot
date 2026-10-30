@@ -16,7 +16,7 @@ function SetupRequired() {
         <code>supabase/migrations</code>, then set these variables in <code>.env.local</code> (or in
         Vercel) and restart:
       </p>
-      <pre className="mt-4 overflow-x-auto rounded-md bg-gray-900 p-4 text-xs text-gray-100">{`NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
+      <pre className="mt-4 overflow-x-auto rounded-lg border border-line bg-code p-4 text-xs text-code-ink">{`NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...`}</pre>
       <p className="mt-4 text-sm text-ink-muted">
         See README.md → “Supabase setup” for step-by-step instructions.

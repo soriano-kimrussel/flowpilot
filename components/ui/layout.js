@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils/format';
 
 export function Card({ className, children, as: Tag = 'section', ...props }) {
   return (
-    <Tag className={cn('rounded-lg border border-line bg-surface shadow-sm', className)} {...props}>
+    <Tag className={cn('glass rounded-xl border border-line', className)} {...props}>
       {children}
     </Tag>
   );
@@ -34,7 +34,7 @@ export function PageHeader({ title, description, actions, breadcrumb }) {
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
         {breadcrumb && <div className="mb-1 text-sm text-ink-subtle">{breadcrumb}</div>}
-        <h1 className="text-xl font-semibold tracking-tight text-ink">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">{title}</h1>
         {description && <p className="mt-1 max-w-2xl text-sm text-ink-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -48,7 +48,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
       className={cn('flex flex-col items-center justify-center px-6 py-12 text-center', className)}
     >
       {Icon && (
-        <div className="mb-3 rounded-full bg-gray-100 p-3 text-ink-subtle">
+        <div className="mb-3 rounded-2xl bg-brand-50 p-3 text-brand-700 ring-1 ring-brand-200 ring-inset">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
       )}
@@ -75,7 +75,7 @@ export function Alert({ tone = 'info', title, children, className }) {
   return (
     <div
       role={tone === 'error' ? 'alert' : 'status'}
-      className={cn('rounded-md border px-4 py-3 text-sm', tones[tone], className)}
+      className={cn('rounded-lg border px-4 py-3 text-sm', tones[tone], className)}
     >
       {title && <p className="font-medium">{title}</p>}
       {children && <div className={cn(title && 'mt-1', 'opacity-90')}>{children}</div>}
@@ -85,12 +85,20 @@ export function Alert({ tone = 'info', title, children, className }) {
 
 export function StatCard({ label, value, hint, icon: Icon }) {
   return (
-    <Card className="p-4">
+    <Card className="relative overflow-hidden p-4">
+      <div
+        className="pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-brand-500/20 blur-2xl"
+        aria-hidden="true"
+      />
       <div className="flex items-center justify-between">
         <p className="text-xs font-medium tracking-wide text-ink-subtle uppercase">{label}</p>
-        {Icon && <Icon className="h-4 w-4 text-ink-subtle" aria-hidden="true" />}
+        {Icon && (
+          <span className="rounded-lg bg-brand-50 p-1.5 text-brand-700 ring-1 ring-brand-200 ring-inset">
+            <Icon className="h-4 w-4" aria-hidden="true" />
+          </span>
+        )}
       </div>
-      <p className="mt-2 text-2xl font-semibold tabular-nums text-ink">{value}</p>
+      <p className="mt-2 text-3xl font-semibold tracking-tight tabular-nums text-ink">{value}</p>
       {hint && <p className="mt-1 text-xs text-ink-subtle">{hint}</p>}
     </Card>
   );

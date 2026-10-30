@@ -18,20 +18,23 @@ const INCLUDED = [
 export default function PricingPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Pricing</h1>
+      <h1 className="text-4xl font-semibold tracking-tight">
+        <span className="text-gradient">Pricing</span>
+      </h1>
       <p className="mt-3 max-w-2xl text-ink-muted">
         FlowPilot AI is a portfolio demonstration. There is one plan, it is free, and there is no
         payment processing anywhere in the product.
       </p>
 
-      <div className="mt-10 rounded-xl border border-brand-200 bg-surface p-6 shadow-sm sm:p-8">
+      <div className="glass ring-gradient glow-brand mt-10 rounded-2xl p-6 sm:p-8">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold">Demo plan</h2>
             <p className="text-sm text-ink-muted">For evaluation and learning</p>
           </div>
           <p className="text-3xl font-semibold">
-            $0 <span className="text-base font-normal text-ink-subtle">forever</span>
+            <span className="text-gradient text-5xl">$0</span>{' '}
+            <span className="text-base font-normal text-ink-subtle">forever</span>
           </p>
         </div>
         <ul className="mt-6 grid gap-2 sm:grid-cols-2">

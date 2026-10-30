@@ -12,7 +12,7 @@ import { RelativeTime } from '@/components/ui/relative-time';
 
 function CodeBlock({ children }) {
   return (
-    <pre className="overflow-x-auto rounded-md bg-gray-900 p-3 text-xs leading-relaxed text-gray-100">
+    <pre className="overflow-x-auto rounded-lg border border-line bg-code p-3 text-xs leading-relaxed text-code-ink">
       {children}
     </pre>
   );
@@ -56,7 +56,7 @@ export function WebhookPanel({ workflowId, endpoint, siteUrl, status }) {
       {revealed && (
         <Alert tone="warning" title="Copy this secret now">
           It is shown only once and stored as a hash.
-          <code className="mt-2 block rounded bg-white/70 px-2 py-1 font-mono text-xs break-all text-ink">
+          <code className="mt-2 block rounded bg-surface/70 px-2 py-1 font-mono text-xs break-all text-ink">
             {revealed.secret}
           </code>
         </Alert>

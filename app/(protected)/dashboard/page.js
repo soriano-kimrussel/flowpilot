@@ -139,7 +139,7 @@ export default async function DashboardPage({ searchParams }) {
               data={metrics.failingActions.map((f) => ({
                 label: f.label,
                 value: f.failures,
-                color: '#dc2626',
+                color: 'var(--color-red-600)',
               }))}
               valueLabel="Failures by action"
               emptyText="No failed steps. Nice."

@@ -18,7 +18,7 @@ export function Pagination({ basePath, searchParams, page, pageSize, total }) {
   const from = (page - 1) * pageSize + 1;
   const to = Math.min(total, page * pageSize);
   const linkClass =
-    'inline-flex h-8 items-center gap-1 rounded-md border border-line-strong bg-surface px-2.5 text-sm';
+    'inline-flex h-8 items-center gap-1 rounded-lg border border-line-strong bg-surface/60 px-2.5 text-sm';
 
   return (
     <nav
@@ -33,7 +33,7 @@ export function Pagination({ basePath, searchParams, page, pageSize, total }) {
       <div className="flex gap-2">
         {page > 1 ? (
           <Link
-            className={cn(linkClass, 'hover:bg-gray-50')}
+            className={cn(linkClass, 'hover:bg-gray-100')}
             href={hrefFor(basePath, searchParams, page - 1)}
             rel="prev"
           >
@@ -46,7 +46,7 @@ export function Pagination({ basePath, searchParams, page, pageSize, total }) {
         )}
         {page < pages ? (
           <Link
-            className={cn(linkClass, 'hover:bg-gray-50')}
+            className={cn(linkClass, 'hover:bg-gray-100')}
             href={hrefFor(basePath, searchParams, page + 1)}
             rel="next"
           >

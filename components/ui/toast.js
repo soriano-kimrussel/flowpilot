@@ -52,7 +52,7 @@ export function ToastProvider({ children }) {
             <div
               key={t.id}
               role={t.tone === 'error' ? 'alert' : 'status'}
-              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border border-line bg-surface p-3 shadow-lg"
+              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 glass rounded-xl border border-line-strong p-3"
             >
               <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', TONES[t.tone])} aria-hidden="true" />
               <div className="min-w-0 flex-1">

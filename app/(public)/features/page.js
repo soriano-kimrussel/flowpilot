@@ -14,7 +14,9 @@ export default function FeaturesPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Features</h1>
+      <h1 className="text-4xl font-semibold tracking-tight">
+        <span className="text-gradient">Features</span>
+      </h1>
       <p className="mt-3 max-w-2xl text-ink-muted">
         FlowPilot combines a structured workflow builder, a persistent execution engine and
         transparent AI assistance. Every action below is a real, tested module in the open action
@@ -25,7 +27,10 @@ export default function FeaturesPage() {
         <h2 className="text-lg font-semibold">Triggers</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Object.entries(TRIGGERS).map(([type, t]) => (
-            <div key={type} className="rounded-lg border border-line p-4">
+            <div
+              key={type}
+              className="glass rounded-2xl border border-line p-4 transition-colors hover:border-brand-500/40"
+            >
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold">{t.label}</h3>
                 <code className="text-xs text-ink-subtle">{type}</code>
@@ -41,7 +46,10 @@ export default function FeaturesPage() {
           <h2 className="text-lg font-semibold">{cat.label}</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {cat.actions.map(([type, a]) => (
-              <div key={type} className="rounded-lg border border-line p-4">
+              <div
+                key={type}
+                className="glass rounded-2xl border border-line p-4 transition-colors hover:border-brand-500/40"
+              >
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-sm font-semibold">{a.label}</h3>
                   {a.simulated ? (
@@ -58,7 +66,7 @@ export default function FeaturesPage() {
         </section>
       ))}
 
-      <section className="mt-14 rounded-lg border border-line bg-canvas p-6">
+      <section className="glass ring-gradient mt-14 rounded-2xl border border-line p-6 sm:p-8">
         <h2 className="text-lg font-semibold">How AI is used, honestly</h2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-ink-muted">
           <li>

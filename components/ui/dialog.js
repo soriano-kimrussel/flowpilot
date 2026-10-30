@@ -32,7 +32,7 @@ export function Dialog({ open, onClose, title, description, children, footer, si
       onClick={(e) => {
         if (e.target === ref.current) onClose?.();
       }}
-      className={`m-auto w-[calc(100%-2rem)] ${width} rounded-lg border border-line bg-surface p-0 text-ink shadow-xl backdrop:bg-gray-900/40`}
+      className={`m-auto w-[calc(100%-2rem)] ${width} rounded-xl border border-line-strong bg-surface p-0 text-ink shadow-2xl backdrop:bg-[#04060f]/60 backdrop:backdrop-blur-sm`}
     >
       {open && (
         <div>
@@ -58,7 +58,7 @@ export function Dialog({ open, onClose, title, description, children, footer, si
           </div>
           {children && <div className="px-5 py-4">{children}</div>}
           {footer && (
-            <div className="flex justify-end gap-2 border-t border-line bg-gray-50/60 px-5 py-3">
+            <div className="flex justify-end gap-2 rounded-b-xl border-t border-line bg-gray-50 px-5 py-3">
               {footer}
             </div>
           )}

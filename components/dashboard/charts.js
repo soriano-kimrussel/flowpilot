@@ -1,26 +1,47 @@
 'use client';
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useTheme } from '@/components/theme/theme';
 
 // Status colors are reserved for execution state; leads use the single brand hue.
-const COLORS = { succeeded: '#059669', failed: '#dc2626', other: '#9ca3af', brand: '#4f46e5' };
-const AXIS = { fontSize: 12, fill: '#6b7280' };
+// SVG attributes can't read CSS variables reliably, so chart colors are picked per theme.
+const PALETTES = {
+  dark: {
+    succeeded: '#34d399',
+    failed: '#fb7185',
+    other: '#5b6390',
+    grid: 'rgba(148,163,255,0.1)',
+    axis: '#7d84a8',
+    gap: '#0d1224',
+    cursor: 'rgba(139,92,246,0.08)',
+  },
+  light: {
+    succeeded: '#059669',
+    failed: '#e11d48',
+    other: '#a5abc4',
+    grid: '#eceef6',
+    axis: '#6a7090',
+    gap: '#ffffff',
+    cursor: 'rgba(124,58,237,0.06)',
+  },
+};
+const BRAND = 'var(--color-brand-500)';
 
 function shortDay(day) {
   const d = new Date(`${day}T00:00:00Z`);
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
-function VolumeTooltip({ active, payload, label }) {
+function VolumeTooltip({ active, payload, label, colors }) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload;
   return (
-    <div className="rounded-md border border-line bg-surface px-3 py-2 text-xs shadow-md">
+    <div className="glass rounded-lg border border-line-strong px-3 py-2 text-xs">
       <p className="mb-1 font-medium text-ink">{shortDay(label)}</p>
       {[
-        ['Succeeded', row.succeeded, COLORS.succeeded],
-        ['Failed', row.failed, COLORS.failed],
-        ['Other', row.other, COLORS.other],
+        ['Succeeded', row.succeeded, colors.succeeded],
+        ['Failed', row.failed, colors.failed],
+        ['Other', row.other, colors.other],
       ].map(([name, value, color]) => (
         <p key={name} className="flex items-center gap-2 text-ink-muted">
           <span className="h-2 w-2 rounded-sm" style={{ background: color }} aria-hidden="true" />
@@ -32,13 +53,15 @@ function VolumeTooltip({ active, payload, label }) {
 }
 
 export function ExecutionVolumeChart({ data }) {
+  const colors = PALETTES[useTheme()];
+  const axis = { fontSize: 12, fill: colors.axis };
   return (
     <figure>
       <div className="mb-3 flex flex-wrap gap-4 text-xs text-ink-muted" aria-hidden="true">
         {[
-          ['Succeeded', COLORS.succeeded],
-          ['Failed', COLORS.failed],
-          ['Pending / cancelled', COLORS.other],
+          ['Succeeded', colors.succeeded],
+          ['Failed', colors.failed],
+          ['Pending / cancelled', colors.other],
         ].map(([name, color]) => (
           <span key={name} className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-sm" style={{ background: color }} />
@@ -53,30 +76,36 @@ export function ExecutionVolumeChart({ data }) {
             margin={{ top: 4, right: 4, bottom: 0, left: -20 }}
             barCategoryGap="25%"
           >
-            <CartesianGrid vertical={false} stroke="#eef0f3" />
+            <CartesianGrid vertical={false} stroke={colors.grid} />
             <XAxis
               dataKey="day"
               tickFormatter={shortDay}
-              tick={AXIS}
+              tick={axis}
               tickLine={false}
               axisLine={false}
               minTickGap={16}
             />
-            <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
-            <Tooltip content={<VolumeTooltip />} cursor={{ fill: 'rgba(17,24,39,0.04)' }} />
+            <YAxis allowDecimals={false} tick={axis} tickLine={false} axisLine={false} />
+            <Tooltip content={<VolumeTooltip colors={colors} />} cursor={{ fill: colors.cursor }} />
             <Bar
               dataKey="succeeded"
               stackId="a"
-              fill={COLORS.succeeded}
-              stroke="#fff"
+              fill={colors.succeeded}
+              stroke={colors.gap}
               strokeWidth={2}
             />
-            <Bar dataKey="failed" stackId="a" fill={COLORS.failed} stroke="#fff" strokeWidth={2} />
+            <Bar
+              dataKey="failed"
+              stackId="a"
+              fill={colors.failed}
+              stroke={colors.gap}
+              strokeWidth={2}
+            />
             <Bar
               dataKey="other"
               stackId="a"
-              fill={COLORS.other}
-              stroke="#fff"
+              fill={colors.other}
+              stroke={colors.gap}
               strokeWidth={2}
               radius={[4, 4, 0, 0]}
             />
@@ -127,7 +156,7 @@ export function HorizontalBars({ data, valueLabel = 'Count', emptyText = 'No dat
               className="block h-full rounded-r"
               style={{
                 width: `${(d.value / max) * 100}%`,
-                background: d.color ?? COLORS.brand,
+                background: d.color ?? `linear-gradient(90deg, ${BRAND}, var(--color-accent-500))`,
                 minWidth: d.value ? 4 : 0,
               }}
             />

@@ -3,10 +3,14 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils/format';
 
 const VARIANTS = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm disabled:bg-brand-600/60',
-  secondary: 'bg-surface text-ink border border-line-strong hover:bg-gray-50 shadow-sm',
+  primary:
+    'text-white bg-linear-to-r from-[#7c3aed] via-[#8b5cf6] to-[#06b6d4] bg-[length:200%_100%] bg-left ' +
+    'shadow-[0_8px_24px_-8px_rgb(124_58_237/0.7)] hover:bg-right hover:shadow-[0_10px_30px_-8px_rgb(124_58_237/0.85)] ' +
+    'transition-[background-position,box-shadow] duration-300',
+  secondary:
+    'bg-surface/70 text-ink border border-line-strong hover:bg-gray-100 hover:border-brand-500/40 backdrop-blur',
   ghost: 'text-ink-muted hover:bg-gray-100 hover:text-ink',
-  danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm disabled:bg-red-600/60',
+  danger: 'bg-[#e11d48] text-white hover:bg-[#be123c] shadow-[0_8px_24px_-10px_rgb(225_29_72/0.7)]',
   link: 'text-brand-700 hover:text-brand-800 underline-offset-4 hover:underline px-0',
 };
 
@@ -19,7 +23,7 @@ const SIZES = {
 
 export function buttonClasses({ variant = 'primary', size = 'md', className } = {}) {
   return cn(
-    'inline-flex items-center justify-center rounded-md font-medium whitespace-nowrap transition-colors',
+    'inline-flex items-center justify-center rounded-lg font-medium whitespace-nowrap transition-colors',
     'disabled:cursor-not-allowed disabled:opacity-70',
     VARIANTS[variant],
     SIZES[size],
